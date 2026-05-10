@@ -57,7 +57,7 @@ html, body {
 .slide {
   position: absolute;
   inset: 0;
-  padding: 40px 72px 40px 96px;
+  padding: 36px 72px 32px 96px;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -94,7 +94,7 @@ html, body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .section-label::before { content: '— '; opacity: 0.5; }
@@ -102,11 +102,11 @@ html, body {
 h1.display {
   font-family: 'Inter Tight', sans-serif;
   font-weight: 800;
-  font-size: clamp(30px, 3.4vw, 46px);
+  font-size: clamp(28px, 3.1vw, 42px);
   line-height: 1.05;
   letter-spacing: -0.025em;
   color: var(--ink);
-  margin-bottom: 22px;
+  margin-bottom: 16px;
   max-width: 22ch;
 }
 
@@ -596,8 +596,8 @@ p { font-family: 'Inter Tight', sans-serif; }
 .team-cadence-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  margin-top: 24px;
+  gap: 56px;
+  margin-top: 16px;
   flex: 1;
   align-content: start;
 }
@@ -609,30 +609,29 @@ p { font-family: 'Inter Tight', sans-serif; }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 16px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 7px;
   border-bottom: 1px solid var(--rule);
 }
 
 .tc-col .tc-item {
-  padding: 9px 0;
+  padding: 7px 0;
   border-bottom: 1px solid var(--rule);
 }
 .tc-col .tc-item:last-child { border-bottom: none; }
 
 .tc-col .tc-name {
   font-family: 'Inter Tight', sans-serif;
-  font-variation-settings: 'opsz' 24;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--ink);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .tc-col .tc-desc {
   font-family: 'Inter Tight', sans-serif;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.5;
   color: var(--ink-soft);
 }
 
@@ -642,14 +641,13 @@ p { font-family: 'Inter Tight', sans-serif; }
    TAKEAWAY (footer line on most slides)
    ======================================================================== */
 .takeaway {
-  margin-top: 22px;
-  padding-top: 14px;
+  margin-top: 16px;
+  padding-top: 10px;
   border-top: 1px solid var(--rule);
   font-family: 'Inter Tight', sans-serif;
-  font-variation-settings: 'opsz' 36;
   font-weight: 500;
   font-style: italic;
-  font-size: clamp(13px, 1.05vw, 16px);
+  font-size: clamp(13px, 1vw, 15px);
   line-height: 1.45;
   color: var(--accent);
   max-width: 70ch;
