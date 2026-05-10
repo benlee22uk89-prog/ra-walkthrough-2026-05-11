@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Walkthrough — Related Argent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+/* ========================================================================
+   RESET + ROOT
+   ======================================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper:    #f4f0eb;   /* Related Argent cream */
+  --paper-2:  #ebe5dd;   /* slightly darker for depth */
+  --ink:      #1a1414;   /* warm near-black */
+  --ink-soft: #5d5550;   /* warm grey */
+  --rule:     #d8cfc4;   /* hairline cream */
+  --accent:   #50135e;   /* Related Argent aubergine */
+  --accent-2: #6b1e7a;   /* aubergine softened */
+  --detail:   #c25a3c;   /* terracotta — Tier 2 */
+  --detail-2: #d4a957;   /* warm ochre — secondary detail */
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--accent); color: var(--paper); }
+
+/* ========================================================================
+   DECK + SLIDES
+   ======================================================================== */
+#deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 40px 72px 40px 96px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+  overflow: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s linear 0s;
+}
+
+/* Aubergine vertical rule down the left edge */
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 44px;
+  bottom: 56px;
+  left: 56px;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+/* ========================================================================
+   TYPOGRAPHY
+   ======================================================================== */
+.section-label {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.section-label::before { content: '— '; opacity: 0.5; }
+
+h1.display {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-bottom: 22px;
+  max-width: 22ch;
+}
+
+h1.display em {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.lead {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 60ch;
+  margin-bottom: 22px;
+}
+
+.lead strong { color: var(--ink); font-weight: 600; }
+
+p { font-family: 'Inter Tight', sans-serif; }
+
+/* ========================================================================
+   SLIDE NUMBER + NAV
+   ======================================================================== */
+.slide-num {
+  position: absolute;
+  top: 44px;
+  right: 80px;
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 9;
+  font-feature-settings: 'tnum';
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.slide-num em { color: var(--ink-soft); font-style: normal; }
+
+.client-mark { display: none; }
+
+.nav-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0.4;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.nav-hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 9px;
+}
+
+/* ========================================================================
+   COVER (slide 1)
+   ======================================================================== */
+.slide-cover { padding: 120px 120px 120px 160px; justify-content: center; }
+.slide-cover::before { display: none; }
+.slide-cover .slide-num { display: none; }
+.slide-cover .client-mark { display: none; }
+
+.cover-rule {
+  width: 96px;
+  height: 1px;
+  background: var(--accent);
+  margin-bottom: 48px;
+}
+
+.cover-badge {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 48px;
+}
+
+.cover-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 900;
+  font-size: clamp(56px, 7.5vw, 108px);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+.cover-title em {
+  font-style: normal;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.cover-client {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: clamp(20px, 2vw, 28px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 96px;
+}
+
+.cover-meta {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.cover-meta strong { color: var(--ink); font-weight: 600; }
+.cover-meta .meta-divider { display: inline-block; margin: 0 12px; opacity: 0.4; }
+
+/* ========================================================================
+   TWO-COLUMN BODY LAYOUT (default for content slides)
+   ======================================================================== */
+.slide-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 80px;
+  flex: 1;
+  align-content: start;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.slide-body .col-left { display: flex; flex-direction: column; }
+.slide-body .col-right { display: flex; flex-direction: column; padding-top: 12px; }
+
+/* ========================================================================
+   STAGE / NUMBERED ITEMS (used in slide 2, slide 5, slide 9)
+   ======================================================================== */
+.numbered-list { list-style: none; }
+
+.numbered-list li {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.numbered-list li:last-child { border-bottom: 1px solid var(--rule); }
+
+.numbered-list .num {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 9;
+  font-feature-settings: 'tnum';
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--accent);
+  padding-top: 4px;
+  letter-spacing: 0.06em;
+}
+
+.numbered-list .item-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 24;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.numbered-list .item-title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.numbered-list .item-body {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.numbered-list .item-body strong { color: var(--ink); font-weight: 600; }
+
+/* ========================================================================
+   STORY FLOW (slide 3 — problem / cause / solution)
+   ======================================================================== */
+.big-line {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 72;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.25;
+  color: var(--ink);
+  margin-bottom: 40px;
+  padding-left: 24px;
+  border-left: 2px solid var(--accent);
+  max-width: 32ch;
+}
+
+.story-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.story-step {
+  padding: 20px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.story-step:last-child { border-bottom: 1px solid var(--rule); }
+
+.story-step .tag {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.story-step .step-text {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.story-step .step-text strong { color: var(--ink); font-weight: 600; }
+
+/* ========================================================================
+   QUADRANT MATRIX (slide 4)
+   ======================================================================== */
+.matrix-slide { padding: 40px 72px 40px 96px; overflow-y: auto; }
+.matrix-slide::-webkit-scrollbar { width: 8px; }
+.matrix-slide::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+.matrix-slide::-webkit-scrollbar-track { background: transparent; }
+.matrix-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.6fr);
+  gap: 56px;
+  margin-top: 24px;
+  align-items: start;
+}
+.matrix-canvas-wrap {
+  position: relative;
+  height: 440px;
+  min-height: 0;
+}
+.matrix-canvas-wrap canvas { width: 100% !important; height: 100% !important; }
+
+.matrix-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.matrix-legend-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.matrix-legend ul { list-style: none; }
+
+.matrix-legend li {
+  display: grid;
+  grid-template-columns: 28px 1fr 36px;
+  gap: 10px;
+  align-items: baseline;
+  padding: 9px 0;
+  font-size: 12.5px;
+  line-height: 1.3;
+  border-bottom: 1px dashed var(--rule);
+}
+
+.matrix-legend li:last-child { border-bottom: none; }
+
+.matrix-legend .leg-num {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 9;
+  font-feature-settings: 'tnum';
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.matrix-legend li.tier-1 .leg-num { color: var(--accent); }
+.matrix-legend li.tier-2 .leg-num { color: var(--detail); }
+
+.matrix-legend .leg-name {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.matrix-legend .leg-score {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 9;
+  font-feature-settings: 'tnum';
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+/* ========================================================================
+   STAGES (slide 5)
+   ======================================================================== */
+.stages-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  margin-top: 24px;
+  flex: 1;
+  align-content: start;
+}
+
+.stage-col {
+  position: relative;
+  padding: 8px 24px 8px 24px;
+  border-left: 1px solid var(--rule);
+}
+
+.stage-col:first-child { border-left: none; padding-left: 0; }
+
+.stage-col .stg-num {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 9;
+  font-feature-settings: 'tnum';
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.stage-col .stg-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 36;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.stage-col .stg-period {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--detail);
+  margin-bottom: 18px;
+}
+
+.stage-col .stg-body {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.stage-col .stg-body p + p { margin-top: 8px; }
+.stage-col .stg-body strong { color: var(--ink); font-weight: 600; }
+
+/* ========================================================================
+   COMPONENTS (slide 6 — three components)
+   ======================================================================== */
+.components-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 32px;
+  flex: 1;
+  align-content: start;
+}
+
+.component {
+  padding: 0 32px;
+  border-left: 1px solid var(--rule);
+}
+
+.component:first-child { padding-left: 0; border-left: none; }
+
+.component .cmp-num {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 144;
+  font-weight: 600;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--accent);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.component .cmp-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 36;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.component .cmp-meta {
+  font-family: 'Inter Tight', sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--detail);
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.component .cmp-body {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ========================================================================
+   FROM YOU (slide 7) + CADENCE (slide 8 right col)
+   ======================================================================== */
+.checklist { list-style: none; }
+
+.checklist li {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.checklist li:last-child { border-bottom: 1px solid var(--rule); }
+
+.checklist .ck-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 24;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.checklist .ck-body {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ========================================================================
+   TEAM + CADENCE (slide 8)
+   ======================================================================== */
+.team-cadence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  margin-top: 24px;
+  flex: 1;
+  align-content: start;
+}
+
+.tc-col h3 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tc-col .tc-item {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.tc-col .tc-item:last-child { border-bottom: none; }
+
+.tc-col .tc-name {
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 24;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.tc-col .tc-desc {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.tc-col .tc-desc strong { color: var(--ink); font-weight: 600; }
+
+/* ========================================================================
+   TAKEAWAY (footer line on most slides)
+   ======================================================================== */
+.takeaway {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-family: 'Inter Tight', sans-serif;
+  font-variation-settings: 'opsz' 36;
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.45;
+  color: var(--accent);
+  max-width: 70ch;
+}
+
+/* ========================================================================
+   ANIMATIONS
+   ======================================================================== */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.slide.active > * {
+  animation: slideIn 0.6s ease both;
+}
+
+.slide.active > *:nth-child(2) { animation-delay: 0.1s; }
+.slide.active > *:nth-child(3) { animation-delay: 0.18s; }
+.slide.active > *:nth-child(4) { animation-delay: 0.24s; }
+.slide.active > *:nth-child(5) { animation-delay: 0.3s; }
+
+/* ========================================================================
+   PRINT
+   ======================================================================== */
+@page { size: 13.333in 7.5in; margin: 0; }
+@media print {
+  body { overflow: visible; height: auto; background: var(--paper); }
+  #deck { width: 100%; height: auto; overflow: visible; }
+  .slide {
+    position: relative !important;
+    inset: auto !important;
+    width: 13.333in;
+    height: 7.5in;
+    padding: 0.5in 0.7in 0.5in 0.85in;
+    page-break-after: always;
+    page-break-inside: avoid;
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important;
+    overflow: hidden !important;
+  }
+  .slide:last-child { page-break-after: auto; }
+  .slide > * { animation: none !important; }
+  .slide::before { top: 0.5in; bottom: 0.5in; left: 0.4in; }
+  .slide-num { top: 0.45in; right: 0.6in; }
+  .matrix-canvas-wrap { height: 3.6in; }
+  .nav-hint { display: none; }
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 1100px) {
+  .slide { padding: 48px 64px 64px 80px; }
+  .slide::before { left: 40px; top: 48px; bottom: 64px; }
+  .slide-num { right: 64px; top: 48px; }
+  .client-mark { left: 80px; }
+  .slide-body, .team-cadence-grid { grid-template-columns: 1fr; gap: 40px; }
+  .components-grid { grid-template-columns: 1fr; }
+  .component { padding-left: 0; border-left: none; border-top: 1px solid var(--rule); padding-top: 32px; margin-top: 32px; }
+  .component:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .stages-grid { grid-template-columns: 1fr 1fr; }
+  .matrix-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ====================================================================
+       SLIDE 1 — COVER
+       ==================================================================== -->
+  <section class="slide slide-cover active" id="s1">
+    <div class="cover-rule"></div>
+    <div class="cover-badge">May 2026</div>
+    <h1 class="cover-title">Programme<br><em>Walkthrough</em></h1>
+    <div class="cover-client">Related Argent</div>
+    <div class="cover-meta">
+      Prepared by <strong>Ben Lee</strong> and <strong>Mabel Figueiredo</strong>
+      <span class="meta-divider">·</span>
+      For <strong>Chrissy Cullen</strong> &amp; <strong>Jenny Obee</strong>
+      <span class="meta-divider">·</span>
+      11 May 2026
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 2 — WHERE WE GOT TO
+       ==================================================================== -->
+  <section class="slide" id="s2">
+    <div class="slide-num">02 <em>/ 10</em></div>
+    <div class="section-label">The story so far</div>
+    <h1 class="display">Four stages since <em>February.</em></h1>
+    <ol class="numbered-list">
+      <li>
+        <div class="num">01</div>
+        <div>
+          <div class="item-title">Discovery <em>— 27 February</em></div>
+          <div class="item-body">A 30-minute call with you both. The brief that's shaped everything since: <strong>pilot fast, succeed or fail, implement or move on.</strong></div>
+        </div>
+      </li>
+      <li>
+        <div class="num">02</div>
+        <div>
+          <div class="item-title">Workshop <em>— 25 March</em></div>
+          <div class="item-body">Two hours at Cubitt with eight of your team. First prioritisation of where AI could matter most across marketing, communications and events.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">03</div>
+        <div>
+          <div class="item-title">Audit <em>— 3–22 April</em></div>
+          <div class="item-body">Workshop, survey and stakeholder context worked into a structured audit. Ten scored opportunities, a 90-day plan, a 12-month roadmap.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">04</div>
+        <div>
+          <div class="item-title">Audit delivered <em>— 27 April</em></div>
+          <div class="item-body">The version in your hands today.</div>
+        </div>
+      </li>
+    </ol>
+    <div class="takeaway">The audit's landed. Today's about turning it into a programme that fits your pilot-first culture.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 3 — CORE INSIGHT
+       ==================================================================== -->
+  <section class="slide" id="s3">
+    <div class="slide-num">03 <em>/ 10</em></div>
+    <div class="section-label">The thesis</div>
+    <h1 class="display">One pattern, one <em>family</em> of solutions.</h1>
+    <div class="slide-body">
+      <div class="col-left">
+        <div class="big-line">Senior people are spending their most valuable time on the cheapest part of the work.</div>
+        <p class="lead">Briefing notes, event briefs, occupier pitches, residential briefs, award entries — five expressions of one pattern.</p>
+      </div>
+      <div class="col-right">
+        <div class="story-flow">
+          <div class="story-step">
+            <div class="tag">The problem</div>
+            <div class="step-text"><strong>Senior people on low-value assembly.</strong> Gathering, formatting, and structuring information AI should be handling first.</div>
+          </div>
+          <div class="story-step">
+            <div class="tag">The cause</div>
+            <div class="step-text"><strong>The same information assembled repeatedly</strong>, with no reusable formats for brand context, briefing structures, or event templates.</div>
+          </div>
+          <div class="story-step">
+            <div class="tag">The solution</div>
+            <div class="step-text"><strong>Templates, source material, and brand voice</strong> combined into a structured first draft your team reviews and improves.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="takeaway">Start with a single pilot. Save time in the first week — scale it. If not, change it or move on.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 4 — PRIORITISATION MATRIX
+       ==================================================================== -->
+  <section class="slide matrix-slide" id="s4">
+    <div class="slide-num">04 <em>/ 10</em></div>
+    <div class="section-label">Audit highlights</div>
+    <h1 class="display">Eleven priorities, plotted by <em>impact</em> and <em>effort.</em></h1>
+    <p class="lead">Your team's own scoring on the day, refined through the audit. <strong>Tier 1</strong> in aubergine — the priority programme. <strong>Tier 2</strong> in terracotta — months four onwards.</p>
+    <div class="matrix-layout">
+      <div class="matrix-canvas-wrap">
+        <canvas id="matrixChart"></canvas>
+      </div>
+      <div class="matrix-legend">
+        <div class="matrix-legend-title">The 11 priorities</div>
+        <ul id="legendList"></ul>
+      </div>
+    </div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 5 — PROGRAMME STAGES
+       ==================================================================== -->
+  <section class="slide" id="s5">
+    <div class="slide-num">05 <em>/ 10</em></div>
+    <div class="section-label">The journey</div>
+    <h1 class="display">Five stages from set-up to <em>embedded.</em></h1>
+    <p class="lead">The audit set out a 90-day plan plus a 12-month roadmap. Mapped onto the calendar, here's how the journey runs.</p>
+    <div class="stages-grid">
+      <div class="stage-col">
+        <div class="stg-num">Stage 0</div>
+        <div class="stg-title">Set-up</div>
+        <div class="stg-period">Mid–late May</div>
+        <div class="stg-body">
+          <p>Retainer kicks off.</p>
+          <p>Brand voice work begins.</p>
+          <p>First scoping conversations with the team.</p>
+        </div>
+      </div>
+      <div class="stage-col">
+        <div class="stg-num">Stage 1</div>
+        <div class="stg-title">Foundations</div>
+        <div class="stg-period">June · Days 1–30</div>
+        <div class="stg-body">
+          <p><strong>Training/Workshop 1.</strong></p>
+          <p>Foundations and prompting frameworks.</p>
+          <p>The team's first working prototype agent — built live, used in the days that follow.</p>
+        </div>
+      </div>
+      <div class="stage-col">
+        <div class="stg-num">Stage 2</div>
+        <div class="stg-title">Hands-on building</div>
+        <div class="stg-period">July · Days 30–60</div>
+        <div class="stg-body">
+          <p><strong>Training/Workshop 2.</strong></p>
+          <p>The next prototype agents built live with the team.</p>
+          <p>Earlier pilots reviewed against your success criteria — scale, refine, or shelve.</p>
+        </div>
+      </div>
+      <div class="stage-col">
+        <div class="stg-num">Stage 3</div>
+        <div class="stg-title">Advanced builds</div>
+        <div class="stg-period">Aug / Sep · Days 60–90</div>
+        <div class="stg-body">
+          <p><strong>Training/Workshop 3.</strong></p>
+          <p>The most ambitious prototype agents built live.</p>
+          <p>Higher-stakes workstreams piloted internally before any external use.</p>
+        </div>
+      </div>
+      <div class="stage-col">
+        <div class="stg-num">Stage 4</div>
+        <div class="stg-title">Embed and scale</div>
+        <div class="stg-period">Sept onwards · Months 4–12</div>
+        <div class="stg-body">
+          <p>Strategic builds operational.</p>
+          <p>External rollouts under your quality gates.</p>
+          <p>Retainer continues into the 12-month roadmap.</p>
+        </div>
+      </div>
+    </div>
+    <div class="takeaway">Each stage closes with a review and a decision. The next stage begins only when the previous one has earned it.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 6 — THREE COMPONENTS
+       ==================================================================== -->
+  <section class="slide" id="s6">
+    <div class="slide-num">06 <em>/ 10</em></div>
+    <div class="section-label">Our recommendation</div>
+    <h1 class="display">Three parts. Each sized as <em>a pilot.</em></h1>
+    <p class="lead">Three components, sequenced as pilot cycles — small enough to test, review, and decide on at a pace that fits how you already work.</p>
+    <div class="components-grid">
+      <div class="component">
+        <div class="cmp-num">01</div>
+        <div class="cmp-title">Retainer</div>
+        <div class="cmp-meta">Ben-led · bi-weekly · from mid/late May</div>
+        <div class="cmp-body">The advisory layer that sits alongside the team — tooling and governance decisions inside the traffic-light policy, scoping conversations ahead of the bigger builds, and answers to the questions that come up week to week.</div>
+      </div>
+      <div class="component">
+        <div class="cmp-num">02</div>
+        <div class="cmp-title">Training</div>
+        <div class="cmp-meta">Three progressive sessions · from June</div>
+        <div class="cmp-body">Mabel-led, designed around your real workflows. Each session ends with a working prototype the team can use the next day.</div>
+      </div>
+      <div class="component">
+        <div class="cmp-num">03</div>
+        <div class="cmp-title">Quick-win workstreams</div>
+        <div class="cmp-meta">Each runs as a pilot</div>
+        <div class="cmp-body">Briefing Note Generator, Event Brief Template, Brand Voice, Occupier Pitch — each built, tested in real use, and reviewed at a clear checkpoint before scaling, refining, or shelving.</div>
+      </div>
+    </div>
+    <div class="takeaway">Reviewed at every checkpoint. Every pilot earns its next step.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 7 — FROM YOU
+       ==================================================================== -->
+  <section class="slide" id="s7">
+    <div class="slide-num">07 <em>/ 10</em></div>
+    <div class="section-label">Your inputs</div>
+    <h1 class="display">A few things we'd value from you, <em>before we start.</em></h1>
+    <div class="slide-body">
+      <div class="col-left">
+        <p class="lead">We'll lead on the strategic shape. These five inputs shape how cleanly the SOW lands and how quickly the team gets moving.</p>
+      </div>
+      <div class="col-right">
+        <ul class="checklist">
+          <li>
+            <div class="ck-title">Team patterns and constraints</div>
+            <div class="ck-body">How does your team typically absorb training and new ways of working? Anything we should plan around — board reporting, big event delivery, residential launches?</div>
+          </li>
+          <li>
+            <div class="ck-title">Stakeholder map</div>
+            <div class="ck-body">Has anyone joined or left since the workshop? Anyone new we should bring into the early conversations?</div>
+          </li>
+          <li>
+            <div class="ck-title">Tooling and governance</div>
+            <div class="ck-body">Has the traffic-light LLM policy moved at all since the audit? Anything new inside Microsoft 365 — agent-builder permissions enabled or restricted?</div>
+          </li>
+          <li>
+            <div class="ck-title">Brand voice approval</div>
+            <div class="ck-body">We've assumed Chrissy as approver and Anthony as drafter. Does that still feel right?</div>
+          </li>
+          <li>
+            <div class="ck-title">Communication cadence</div>
+            <div class="ck-body">Who's the primary contact at your end? Bi-weekly retainer check-ins as the default — or weekly during the early weeks?</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 8 — HOW WE'LL WORK TOGETHER
+       ==================================================================== -->
+  <section class="slide" id="s8">
+    <div class="slide-num">08 <em>/ 10</em></div>
+    <div class="section-label">The operating model</div>
+    <h1 class="display">How we'll work with you, <em>day to day.</em></h1>
+    <div class="team-cadence-grid">
+      <div class="tc-col">
+        <h3>The team</h3>
+        <div class="tc-item">
+          <div class="tc-name">Ben</div>
+          <div class="tc-desc">Your <strong>main point of contact.</strong> He'll lead the retainer, anchor the tooling and governance conversations, and be the first call for anything that comes up day to day.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">Mabel</div>
+          <div class="tc-desc"><strong>Training lead.</strong> She'll design and deliver all three training sessions, with Ben joining her in the room from Session 2 onwards.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">BenAI</div>
+          <div class="tc-desc">An <strong>AI agent that helps us run the business.</strong> It follows up on meetings, organises documentation, and shares updates and information with the team throughout. It runs our AI operations — the same approach we'd help your team build.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">Your team</div>
+          <div class="tc-desc">Chrissy holds the vision and sign-off. Jenny holds tooling and governance. Your subject matter experts and end users bring the operational knowledge — and adoption sits with you.</div>
+        </div>
+      </div>
+      <div class="tc-col">
+        <h3>The cadence</h3>
+        <div class="tc-item">
+          <div class="tc-name">Bi-weekly retainer check-in</div>
+          <div class="tc-desc">Forty-five minutes, with an agenda shared ahead and notes shared the same day.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">Weekly written status update</div>
+          <div class="tc-desc">Every Friday. What we did, what's planned, what's blocked, and what we'd like from you.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">Async support between</div>
+          <div class="tc-desc">Email or Teams — we'd come back within a working day.</div>
+        </div>
+        <div class="tc-item">
+          <div class="tc-name">Training session protocol</div>
+          <div class="tc-desc">Pre-read sent five working days ahead. Follow-up materials and recording within 48 hours.</div>
+        </div>
+      </div>
+    </div>
+    <div class="takeaway">The shorthand — we use AI operations to deliver this engagement, the same kind of system we'll help your team build.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 9 — SETTING SUCCESS CRITERIA
+       ==================================================================== -->
+  <section class="slide" id="s9">
+    <div class="slide-num">09 <em>/ 10</em></div>
+    <div class="section-label">Defining what good looks like</div>
+    <h1 class="display">Agreed together. In writing. <em>Before we start.</em></h1>
+    <ol class="numbered-list">
+      <li>
+        <div class="num">01</div>
+        <div>
+          <div class="item-title">A short workshop in the first week</div>
+          <div class="item-body">About forty-five minutes — you, Jenny, Mabel and Ben — to talk through what each workstream needs to achieve, what would tell us it's working, and what would tell us it isn't.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">02</div>
+        <div>
+          <div class="item-title">Captured in writing</div>
+          <div class="item-body">A single Success Criteria document with the criteria, the signals we'd watch for, and the review cadence. Yours to sign off.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">03</div>
+        <div>
+          <div class="item-title">Sign-off before delivery starts</div>
+          <div class="item-body">Nothing starts until you've signed off. We don't define success on our own, and we don't define it after the fact.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">04</div>
+        <div>
+          <div class="item-title">Reviewed at every pilot checkpoint</div>
+          <div class="item-body">A brief check at the end of each training session, plus a formal review at month three. We'd look at every active pilot and decide together — <strong>scale it, refine it, or shelve it.</strong></div>
+        </div>
+      </li>
+    </ol>
+    <div class="takeaway">Set right at the start. Reviewed against the same standard throughout. No ambiguity at the end.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+  <!-- ====================================================================
+       SLIDE 10 — NEXT STEPS
+       ==================================================================== -->
+  <section class="slide" id="s10">
+    <div class="slide-num">10 <em>/ 10</em></div>
+    <div class="section-label">What happens next</div>
+    <h1 class="display">Three steps in the <em>next two weeks.</em></h1>
+    <ol class="numbered-list">
+      <li>
+        <div class="num">01</div>
+        <div>
+          <div class="item-title">Tomorrow <em>— 12 May</em></div>
+          <div class="item-body">Phase 2 SOW first draft. Today's conversation feeds straight in — retainer scope, training scope, commercial model, start dates, deliverables.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">02</div>
+        <div>
+          <div class="item-title">End of next week</div>
+          <div class="item-body">SOW shared with you both. We'd build in time for review, comments, and any final shaping before sign-off.</div>
+        </div>
+      </li>
+      <li>
+        <div class="num">03</div>
+        <div>
+          <div class="item-title">Mid–late May</div>
+          <div class="item-body">Retainer kicks off. The first check-in goes in the diary, and we'd start preparing for Training/Workshop 1 in June.</div>
+        </div>
+      </li>
+    </ol>
+    <div class="takeaway">From audit to action. Mid-May start. Visible team progress in June.</div>
+    <div class="client-mark">Related Argent · Programme Walkthrough</div>
+  </section>
+
+</div>
+
+<div class="nav-hint"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>F</kbd> fullscreen</div>
+
+<!-- ====================================================================
+     OPPORTUNITY DATA + MATRIX CHART
+     ==================================================================== -->
+<script>
+const OPP_DATA = [
+  {rank:1,  name:"Briefing Note Generator",       tier:1, impact:5, effort:1, score:5.00},
+  {rank:2,  name:"Event Brief Template Agent",    tier:1, impact:5, effort:1, score:4.80},
+  {rank:3,  name:"Event Project Planning",        tier:1, impact:5, effort:3, score:4.10},
+  {rank:4,  name:"Award Entry Support",           tier:1, impact:4, effort:2, score:4.05},
+  {rank:5,  name:"Brand Voice Encoding",          tier:1, impact:3, effort:2, score:3.95},
+  {rank:6,  name:"Occupier Pitch System",         tier:1, impact:5, effort:3, score:3.70},
+  {rank:7,  name:"Venue Hire Onboarding",         tier:2, impact:2, effort:1, score:3.60},
+  {rank:8,  name:"News Monitoring Digest",        tier:2, impact:4, effort:3, score:3.55},
+  {rank:9,  name:"Supplier Scope Customiser",     tier:2, impact:3, effort:2, score:3.35},
+  {rank:10, name:"In-House Asset Iteration",      tier:2, impact:4, effort:4, score:3.25},
+  {rank:11, name:"Resi Campaign Brief Template",  tier:1, impact:5, effort:1, score:4.50}
+];
+
+// Build legend
+(function buildLegend() {
+  const list = document.getElementById('legendList');
+  // Sort by score descending for legend ordering
+  const sorted = [...OPP_DATA].sort((a,b) => b.score - a.score);
+  sorted.forEach(o => {
+    const li = document.createElement('li');
+    li.className = 'tier-' + o.tier;
+    li.innerHTML = `
+      <span class="leg-num">${o.rank}</span>
+      <span class="leg-name">${o.name}</span>
+      <span class="leg-score">${o.score.toFixed(2)}</span>
+    `;
+    list.appendChild(li);
+  });
+})();
+
+// Build matrix chart on demand (when slide 4 is shown)
+let matrixBuilt = false;
+function buildMatrix() {
+  if (matrixBuilt) return;
+  matrixBuilt = true;
+
+  const ctx = document.getElementById('matrixChart');
+  if (!ctx) return;
+
+  // Deterministic offsets for coincident points: items sharing the same
+  // (impact, effort) get distributed in a small ring around their shared coord.
+  function computeClusterOffsets(data) {
+    const groups = {};
+    data.forEach((d, i) => {
+      const key = `${d.impact},${d.effort}`;
+      (groups[key] = groups[key] || []).push(i);
+    });
+    const offsets = data.map(() => ({ dx: 0, dy: 0 }));
+    Object.values(groups).forEach(indices => {
+      if (indices.length === 1) return;
+      const r = 0.42;
+      const n = indices.length;
+      const startAngle = -Math.PI / 2;
+      indices.forEach((idx, k) => {
+        const angle = startAngle + (k / n) * Math.PI * 2;
+        offsets[idx].dx = Math.cos(angle) * r;
+        offsets[idx].dy = Math.sin(angle) * r;
+      });
+    });
+    return offsets;
+  }
+
+  const clusterOffsets = computeClusterOffsets(OPP_DATA);
+
+  // Resolve CSS vars for chart colours
+  const css = getComputedStyle(document.documentElement);
+  const accent  = css.getPropertyValue('--accent').trim()  || '#50135e';
+  const detail  = css.getPropertyValue('--detail').trim()  || '#c25a3c';
+  const ink     = css.getPropertyValue('--ink').trim()     || '#1a1414';
+  const inkSoft = css.getPropertyValue('--ink-soft').trim()|| '#5d5550';
+  const rule    = css.getPropertyValue('--rule').trim()    || '#d8cfc4';
+  const paper   = css.getPropertyValue('--paper').trim()   || '#f4f0eb';
+
+  const hexA = '88'; // 53% alpha for tier 1
+  const hexB = '77'; // tier 2
+
+  new Chart(ctx, {
+    type: 'bubble',
+    data: {
+      datasets: [{
+        data: OPP_DATA.map((o, i) => ({
+          x: o.effort + clusterOffsets[i].dx,
+          y: o.impact + clusterOffsets[i].dy,
+          r: Math.max(o.score * 2.6, 10),
+          label: o.name,
+          rank: o.rank
+        })),
+        backgroundColor: OPP_DATA.map(o => (o.tier===1 ? accent + hexA : detail + hexB)),
+        borderColor:     OPP_DATA.map(o => (o.tier===1 ? accent : detail)),
+        borderWidth: 1.5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 800, easing: 'easeOutQuart' },
+      layout: { padding: { top: 44, right: 24, bottom: 22, left: 8 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: ink,
+          titleColor: paper,
+          bodyColor: paper,
+          padding: 10,
+          titleFont: { family: 'Inter Tight', size: 12, weight: '600' },
+          bodyFont:  { family: 'Inter Tight', size: 11, weight: '400' },
+          callbacks: {
+            label: (ctx) => {
+              const d = OPP_DATA[ctx.dataIndex];
+              return `#${d.rank} ${d.name} · ${d.score.toFixed(2)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'EFFORT  →',
+            color: inkSoft,
+            font: { family: 'Inter Tight', size: 10, weight: '700' },
+            padding: { top: 6 }
+          },
+          min: 0.2, max: 5.7,
+          grid: { color: rule, lineWidth: 0.5, drawTicks: false },
+          ticks: {
+            color: inkSoft,
+            font: { family: 'Inter Tight', size: 10, weight: '500' },
+            stepSize: 1,
+            callback: function(v) { if (v>5||v<1) return ''; if (v===1) return 'Low'; if (v===5) return 'High'; return ''; }
+          },
+          border: { color: inkSoft, width: 1 }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'IMPACT  →',
+            color: inkSoft,
+            font: { family: 'Inter Tight', size: 10, weight: '700' },
+            padding: { bottom: 6 }
+          },
+          min: 0.5, max: 5.8,
+          grid: { color: rule, lineWidth: 0.5, drawTicks: false },
+          ticks: {
+            color: inkSoft,
+            font: { family: 'Inter Tight', size: 10, weight: '500' },
+            stepSize: 1,
+            callback: function(v) { if (v>5||v<1) return ''; if (v===1) return 'Low'; if (v===5) return 'High'; return ''; }
+          },
+          border: { color: inkSoft, width: 1 }
+        }
+      }
+    },
+    plugins: [{
+      id: 'quadrants',
+      beforeDraw: function(chart) {
+        const c = chart.ctx;
+        const x = chart.scales.x;
+        const y = chart.scales.y;
+        const midX = x.getPixelForValue(2.85);
+        const midY = y.getPixelForValue(3);
+
+        // dashed quadrant divider lines
+        c.save();
+        c.strokeStyle = rule;
+        c.lineWidth = 1;
+        c.setLineDash([4, 4]);
+        c.beginPath();
+        c.moveTo(midX, y.top);
+        c.lineTo(midX, y.bottom);
+        c.stroke();
+        c.beginPath();
+        c.moveTo(x.left, midY);
+        c.lineTo(x.right, midY);
+        c.stroke();
+        c.setLineDash([]);
+
+        // quadrant labels — clearer treatment, accent colour, sized for legibility
+        c.font = '800 11px "Inter Tight", sans-serif';
+        c.textAlign = 'center';
+        c.globalAlpha = 0.9;
+        c.fillStyle = accent;
+        c.fillText('QUICK WINS',     (x.left + midX) / 2,  y.top + 14);
+        c.fillText('STRATEGIC BETS', (midX + x.right) / 2, y.top + 14);
+        c.fillStyle = detail;
+        c.fillText('MOVE FORWARDS',  (x.left + midX) / 2,  y.bottom - 6);
+        c.fillText('DEPRIORITISE',   (midX + x.right) / 2, y.bottom - 6);
+        c.globalAlpha = 1;
+        c.restore();
+      },
+      afterDatasetsDraw: function(chart) {
+        const c = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        meta.data.forEach((point, i) => {
+          c.save();
+          c.fillStyle = paper;
+          c.font = '700 11px "Fraunces", serif';
+          c.textAlign = 'center';
+          c.textBaseline = 'middle';
+          c.fillText(OPP_DATA[i].rank, point.x, point.y);
+          c.restore();
+        });
+      }
+    }]
+  });
+}
+
+/* ====================================================================
+   SLIDE NAVIGATION
+   ==================================================================== */
+const slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+
+function showSlide(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+
+  // Build matrix lazily on first reveal of slide 4 (index 3)
+  if (current === 3) {
+    setTimeout(buildMatrix, 80);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'PageDown':
+    case ' ':
+      e.preventDefault();
+      showSlide(current + 1);
+      break;
+    case 'ArrowLeft':
+    case 'PageUp':
+    case 'Backspace':
+      e.preventDefault();
+      showSlide(current - 1);
+      break;
+    case 'Home':
+      e.preventDefault();
+      showSlide(0);
+      break;
+    case 'End':
+      e.preventDefault();
+      showSlide(slides.length - 1);
+      break;
+    case 'f':
+    case 'F':
+      e.preventDefault();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+      break;
+    case 'Escape':
+      if (document.fullscreenElement) document.exitFullscreen();
+      break;
+  }
+});
+
+// Click on right half of viewport = next; left half = prev
+document.addEventListener('click', (e) => {
+  // ignore clicks inside the canvas tooltip area
+  if (e.target.tagName === 'CANVAS') return;
+  const w = window.innerWidth;
+  if (e.clientX > w * 0.6) showSlide(current + 1);
+  else if (e.clientX < w * 0.4) showSlide(current - 1);
+});
+
+// Build matrix eagerly so headless print / PDF export captures it
+window.addEventListener('load', () => setTimeout(buildMatrix, 100));
+window.addEventListener('beforeprint', buildMatrix);
+</script>
+
+</body>
+</html>
